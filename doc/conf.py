@@ -19,11 +19,9 @@
 #
 import os
 import sys
-sys.path.insert(0, os.path.abspath('../'))
 
-import recommonmark
-from recommonmark.parser import CommonMarkParser
-from recommonmark.transform import AutoStructify
+sys.path.insert(0, os.path.abspath('..'))
+sys.path.insert(0, os.path.abspath('_themes'))
 
 # -- General configuration ------------------------------------------------
 
@@ -36,12 +34,9 @@ from recommonmark.transform import AutoStructify
 # ones.
 extensions = [
     'sphinx.ext.autodoc',
+    'sphinx.ext.intersphinx',
     'sphinx.ext.todo',
-    'sphinx.ext.coverage',
-    'sphinx.ext.imgmath',
-    'sphinx.ext.ifconfig',
     'sphinx.ext.viewcode',
-    'sphinxcontrib.fulltoc'
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -55,7 +50,7 @@ source_parsers = {
 # The suffix(es) of source filenames.
 # You can specify multiple suffix as a list of string:
 #
-source_suffix = ['.rst', '.md']
+source_suffix = ['.rst']
 
 # The master toctree document.
 master_doc = 'index'
@@ -96,7 +91,7 @@ language = None
 exclude_patterns = ['_build', '_static', '_templates', 'Thumbs.db', '.DS_Store']
 
 # The name of the Pygments (syntax highlighting) style to use.
-pygments_style = 'sphinx'
+pygments_style = 'flask_theme_support.FlaskyStyle'
 
 # If true, `todo` and `todoList` produce output, else they produce nothing.
 todo_include_todos = True
@@ -107,10 +102,14 @@ todo_include_todos = True
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = "sphinx_rtd_theme"
+html_theme = 'alabaster'
 html_theme_options = {
-    # "rightsidebar": "true",
-    # "relbarbgcolor": "black"
+    'show_powered_by': False,
+    'github_user': 'ManiacalLabs',
+    'github_repo': 'BiblioPixel',
+    'github_banner': True,
+    'show_related': False,
+    'note_bg': '#FFF59C'
 }
 
 # Theme options are theme-specific and customize the look and feel of a theme
@@ -124,17 +123,30 @@ html_theme_options = {
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
 
+# If true, SmartyPants will be used to convert quotes and dashes to
+# typographically correct entities.
+html_use_smartypants = False
+
 # Custom sidebar templates, must be a dictionary that maps document names
 # to template names.
 #
 # This is required for the alabaster theme
 # refs: http://alabaster.readthedocs.io/en/latest/installation.html#sidebars
 html_sidebars = {
-    '**': [
-        'relations.html',  # needs 'show_related': True theme option to display
-        'searchbox.html',
-    ]
+    'index':    ['sidebarintro.html', 'sourcelink.html', 'searchbox.html',
+                 'hacks.html'],
+    '**':       ['sidebarlogo.html', 'localtoc.html', 'relations.html',
+                 'sourcelink.html', 'searchbox.html', 'hacks.html']
 }
+
+# If true, links to the reST sources are added to the pages.
+html_show_sourcelink = False
+
+# If true, "Created using Sphinx" is shown in the HTML footer. Default is True.
+html_show_sphinx = False
+
+# If true, "(C) Copyright ..." is shown in the HTML footer. Default is True.
+html_show_copyright = True
 
 
 # -- Options for HTMLHelp output ------------------------------------------
@@ -193,55 +205,3 @@ texinfo_documents = [
      'Miscellaneous'),
 ]
 
-API_EXCLUDES = [
-    'main/',
-    'util/threads/',
-    'util/colors/arithmetic.py',
-    'util/colors/conversions.py',
-    'util/colors/classic.py',
-    'util/colors/juce.py',
-    'drivers/return_codes.py',
-    'drivers/serial/codes.py',
-    'drivers/SimPixel/SimpleWebSocketServer.py',
-    'drivers/SimPixel/websocket.py',
-    'drivers/SPI/errors.py',
-]
-
-
-def run_apidoc(_):
-    from sphinx.apidoc import main
-    import os
-    import sys
-    import shutil
-    sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
-    cur_dir = os.path.abspath(os.path.dirname(__file__))
-    api_dir = os.path.join(cur_dir, 'api')
-    shutil.rmtree(api_dir)  # clear out anything old
-    try:
-        os.mkdir(api_dir)  # make it if not exists
-    except:
-        pass
-    module = os.path.abspath(os.path.join(cur_dir, '..', 'bibliopixel'))
-    args = ['-e', '-o', api_dir, module]
-    for ex in API_EXCLUDES:
-        args.append(os.path.join(module, ex))
-
-    main(args)
-
-# No longer going to build API docs
-# Leaving in case we ever want it back
-# def setup(app):
-#     app.connect('builder-inited', run_apidoc)
-
-
-github_doc_root = 'https://github.com/ManiacalLabs/BiblioPixel/tree/master/doc'
-
-
-def setup(app):
-    app.add_config_value('recommonmark_config', {
-        'url_resolver': lambda url: github_doc_root + url,
-        'auto_toc_tree_section': 'Contents',
-        'enable_eval_rst': True,
-        'enable_auto_doc_ref': True,
-    }, True)
-    app.add_transform(AutoStructify)

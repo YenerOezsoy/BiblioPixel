@@ -1,10 +1,12 @@
-# Welcome to BiblioPixel!
+Welcome to the BiblioPixel Light Programming System!
+====================================================
 
 BiblioPixel is a free and open-source Python program for real-time animation of
 lights of all types, often strips of LEDS, which allows people to share
 lighting animations they have created.
 
-## Features
+Features
+========
 
 BiblioPixel has some snappy features:
 
